@@ -39,7 +39,7 @@ class MediaItem < ActiveRecord::Base
   end  
   
   def self.search(params)
-    tire.search(load: true, page: params[:page], per_page: params[:per_page]) do
+    tire.search(load: true, page: params[:page], per_page: 10) do
       if params[:query].present?
         query { string params[:query], default_operator: "AND" }
       else
