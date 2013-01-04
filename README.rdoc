@@ -1,4 +1,4 @@
-Mandiant homework exercise
+Homework exercise
 
 The markup is in a configuration file in config/markup.yml
 
