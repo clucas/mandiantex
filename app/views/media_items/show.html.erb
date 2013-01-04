@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Title:</b>
+  <%= @media_item.title %>
+</p>
+
+<p>
+  <b>Author:</b>
+  <%= @media_item.author %>
+</p>
+
+<p>
+  <b>Publisher:</b>
+  <%= @media_item.publisher %>
+</p>
+
+<p>
+  <b>Category:</b>
+  <%= @media_item.category %>
+</p>
+
+<p>
+  <b>Published on:</b>
+  <%= @media_item.published_on %>
+</p>
+
+<p>
+  <b>Unit cost:</b>
+  <%= Money.new(@media_item.unit_cost).exchange_to(@currency).format %>
+</p>
+
+<p>
+  <b>Price:</b>
+  <%= Money.new(@media_item.price).exchange_to(@currency).format %>
+</p>
+
+
+<%= link_to 'Back', media_items_path %>

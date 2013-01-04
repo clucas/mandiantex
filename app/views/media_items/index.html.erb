@@ -1,0 +1,27 @@
+<h1>Listing</h1>
+
+<%= form_tag media_items_path, method: :get do %>
+  <p>
+    <%= text_field_tag "search[query]", params[:search][:query] %>
+    <%= submit_tag "Search", name: nil %>
+  </p>
+<% end %>
+
+<p><%= will_paginate @media_items %></p>
+<table id="table" class="parse">
+  <tr>
+    <th></th>
+    <th><%= link_to_sorted "Title", :title %></th>
+    <th><%= link_to_sorted "Author", :author %></th>
+    <th><%= link_to_sorted "Price", :unit_cost %></th>
+  </tr>
+
+<% @media_items.each do |media_item| %>
+  <tr class="tablerow" data-url="<%= media_item_path(media_item) %>">
+    <td><%= link_to 'Show', media_item %></td>
+    <td><%= media_item.title %></td>
+    <td><%= media_item.author %></td>
+    <td><%= Money.new(media_item.price).exchange_to(@currency).format %></td>
+  </tr>
+<% end %>
+</table>

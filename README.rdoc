@@ -1,0 +1,23 @@
+Mandiant homework exercise
+
+The markup is in a configuration file in config/markup.yml
+
+The CoffeeScript is not pretty, it has no tests but it works according to the requirements. I could have used DataTables but I thought it was really overkill for that small exercise. If I had more time I would have tried to test the javascript with Konacha.
+
+The CSV does not contain any id so the key to guarantee uniqueness (and to allow update) is based on the following fields: title, author, publisher, published_on
+
+For search
+Install elasticsearch:
+http://www.elasticsearch.org/download/2012/12/27/0.20.2.html
+
+launch elasticsearch:
+bin/elasticsearch -f -D es.config=config/elasticsearch.yml
+
+Run the index:
+RAILS_ENV=development rake environment tire:import CLASS='MediaItem' FORCE=true
+
+
+install and run Redis (used for caching the autocompletion terms)
+
+run the rake task to load the search suggestions in Redis
+rake search_suggestions:index

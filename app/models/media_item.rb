@@ -1,0 +1,76 @@
+require 'csv'
+require 'iconv'
+
+class MediaItem < ActiveRecord::Base
+  attr_accessible :author, :category, :currency, :published_on, :publisher, :title, :unit_cost, :price
+  
+  include Tire::Model::Search
+  include Tire::Model::Callbacks  
+
+  MARKUP = YAML.load_file("#{Rails.root}/config/markup.yml")
+  
+  composed_of :unit_cost,
+              :class_name => 'Money',
+              :mapping => [%w(unit_cost cents), %w(currency currency_as_string)],
+              :constructor => Proc.new { |unit_cost, currency| Money.new(unit_cost, currency || Money.default_currency) },
+              :converter => Proc.new { |value| value.respond_to?(:to_money) ? (value.to_f.to_money rescue Money.empty) : Money.empty }
+  
+  validates :title, :presence => {:message => 'cannot be blank'}
+  validates :author, :presence => {:message => 'cannot be blank'}
+  validates :publisher, :presence => {:message => 'cannot be blank'}
+  validates :category, :presence => {:message => 'cannot be blank'}
+  validates :published_on, :presence => true
+  validates :unit_cost, :presence => {:message => 'cannot be blank'}, :numericality => true
+  
+  
+  mapping do
+    indexes :id, :index => :not_analyzed
+    indexes :currency, :index => :not_analyzed
+    indexes :unit_cost, :index => :not_analyzed
+    indexes :published_on, :index => :not_analyzed
+    indexes :title, :type => 'multi_field', :fields => { :title =>  { :type => 'string', :analyzer => 'snowball' },
+                                                         :exact => { :type => 'string', :index => 'not_analyzed' } }
+    indexes :author, :type => 'multi_field', :fields => { :author =>  { :type => 'string', :analyzer => 'snowball' },
+                                                        :exact => { :type => 'string', :index => 'not_analyzed' } }
+    indexes :price, :type => 'multi_field', :fields => { :price =>  { :type => 'float'},
+                                                        :exact => { :type => 'float', :index => 'not_analyzed' } }
+    indexes :category, :analyzer => 'keyword'
+    indexes :publisher, :analyzer => 'snowball'
+  end  
+  
+  def self.search(params)
+    tire.search(load: true, page: params[:page], per_page: 10) do
+      if params[:query].present?
+        query { string params[:query], default_operator: "AND" }
+      else
+        query { all }
+      end
+      
+      sort { by "title.exact", params[:sort][:title]} if params[:sort].present? && !params[:sort][:title].blank?
+      sort { by "author.exact", params[:sort][:author]} if params[:sort].present? && !params[:sort][:author].blank?
+      sort { by "price.exact", params[:sort][:price]} if params[:sort].present? && !params[:sort][:price].blank?
+    end
+  end
+  
+  
+  def price
+    unit_cost.to_d * 100.0 * ( 1 + MARKUP[self.category] )
+  end
+  
+  def to_indexed_json
+    to_json(methods: [:price])
+  end
+  
+  def self.import_csv
+    begin
+      CSV.foreach(File.join( Rails.root.to_s, 'db', "import", "media_items.csv"), {:headers => true, :header_converters => :symbol}) do |row|
+        media_item = find_by_title_and_author_and_publisher_and_published_on(row[:title], row[:author], row[:publisher], row[:published_on]) || new
+        media_item.attributes = row.to_hash.merge({:currency => "USD"})
+        media_item.save!
+      end
+    rescue Exception => e
+      puts e.message
+      puts "Media item could not be created for row: #{row.to_hash}"
+    end
+  end
+end
