@@ -32,14 +32,14 @@ class MediaItem < ActiveRecord::Base
                                                          :exact => { :type => 'string', :index => 'not_analyzed' } }
     indexes :author, :type => 'multi_field', :fields => { :author =>  { :type => 'string', :analyzer => 'snowball' },
                                                         :exact => { :type => 'string', :index => 'not_analyzed' } }
-    indexes :price, :type => 'multi_field', :fields => { :price =>  { :type => 'float'},
+    indexes :price, :type => 'multi_field', :fields => { :price =>  { :type => 'float', :analyzer => 'keyword' },
                                                         :exact => { :type => 'float', :index => 'not_analyzed' } }
     indexes :category, :analyzer => 'keyword'
     indexes :publisher, :analyzer => 'snowball'
   end  
   
   def self.search(params)
-    tire.search(load: true, page: params[:page], per_page: 10) do
+    tire.search(load: true, page: params[:page], per_page: params[:per_page]) do
       if params[:query].present?
         query { string params[:query], default_operator: "AND" }
       else
@@ -57,8 +57,12 @@ class MediaItem < ActiveRecord::Base
     unit_cost.to_d * 100.0 * ( 1 + MARKUP[self.category] )
   end
   
+  def display_price
+    price.to_s
+  end
+  
   def to_indexed_json
-    to_json(methods: [:price])
+    to_json(methods: [:display_price, :price])
   end
   
   def self.import_csv

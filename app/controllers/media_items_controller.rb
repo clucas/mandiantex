@@ -4,8 +4,10 @@ class MediaItemsController < ApplicationController
   # GET /media_items
   # GET /media_items.json
   def index
-    search_and_sort
-        
+    params[:search] = {} unless params[:search]
+    init_search_sort
+    @media_items = MediaItem.search(params[:search].merge({:page => params[:page], :per_page => 10}))
+    
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @media_items }
@@ -85,20 +87,6 @@ class MediaItemsController < ApplicationController
   
   private
   
-  def search_and_sort
-    params[:search] = {} unless params[:search]
-    # @search = MediaItem.search(params[:search])
-    if !params[:search][:query].blank?
-      init_search_sort
-      @media_items = MediaItem.search(params[:search].merge({:page => params[:page], :per_page => 1}))
-      price_direction_sort(params[:search][:sort][:price]) if params[:sort] && params[:search][:sort] && params[:search][:sort][:price]
-    else
-      @media_items = MediaItem.sorted(params[:sort])
-      price_sort if params[:sort]
-      @media_items = @media_items.paginate(:page => params[:page], :per_page => 10)
-    end
-  end    
-  
   def init_search_sort
     if params[:sort].to_s.start_with?("title")
       title_direction = params[:sort].to_s.split("!").first
@@ -120,16 +108,16 @@ class MediaItemsController < ApplicationController
     end
   end
   
-  def price_sort
-    if params[:sort].to_s.start_with?("unit_cost")
-      unit_cost_direction = params[:sort].to_s.split("!").first
-      unit_cost_direction.slice!("unit_cost_")
-      @media_items = price_direction_sort(unit_cost_direction)
-    end
-  end
-  
-  def price_direction_sort(direction)
-    @media_items = direction.eql?("asc") ? @media_items.sort{|a,b|a.price<=>b.price} : @media_items.sort{|a,b|a.price<=>b.price}.reverse!
-    @media_items = @media_items.paginate(:page => params[:page], :per_page => 10)
-  end
+  # def price_sort
+  #   if params[:sort].to_s.start_with?("unit_cost")
+  #     unit_cost_direction = params[:sort].to_s.split("!").first
+  #     unit_cost_direction.slice!("unit_cost_")
+  #     @media_items = price_direction_sort(unit_cost_direction)
+  #   end
+  # end
+  # 
+  # def price_direction_sort(direction)
+  #   @media_items = direction.eql?("asc") ? @media_items.sort{|a,b|a.price<=>b.price} : @media_items.sort{|a,b|a.price<=>b.price}.reverse!
+  #   @media_items = @media_items.paginate(:page => params[:page], :per_page => 10)
+  # end
 end
