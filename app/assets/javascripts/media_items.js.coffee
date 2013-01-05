@@ -14,10 +14,10 @@ $ ->
 	
 $ ->
   $(document).keydown (e) ->
-    collection = $("#table .tablerow")
+    collection = $("table .tablerow")
     switch e.keyCode
       when 13 # enter
-        uri = $("#table .selected").attr("data-url")
+        uri = $("table .selected").attr("data-url")
         window.location = uri unless typeof (uri) is "undefined"
       when 38 # up
         $(itemUp).removeClass selectedClass

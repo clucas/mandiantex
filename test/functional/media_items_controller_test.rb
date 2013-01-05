@@ -1,16 +1,11 @@
 require 'test_helper'
 
 class MediaItemsControllerTest < ActionController::TestCase
-  setup do
-    @media_item = FactoryGirl.create(:media_item)
-    # @new_media_item = FactoryGirl.build(:media_item)
-  end
-
-  test "should get index" do
-    get :index
-    assert_response :success
-    assert_not_nil assigns(:media_items)
-  end
+  # test "should get index" do
+  #   get :index
+  #   assert_response :success
+  #   assert_not_nil assigns(:media_items)
+  # end
 
   # test "should get new" do
   #   get :new
@@ -26,6 +21,7 @@ class MediaItemsControllerTest < ActionController::TestCase
   # end
 
   test "should show media_item" do
+    @media_item = FactoryGirl.create(:media_item)
     get :show, id: @media_item
     assert_response :success
   end

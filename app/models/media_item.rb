@@ -1,3 +1,19 @@
+# == Schema Information
+#
+# Table name: media_items
+#
+#  id           :integer          not null, primary key
+#  title        :string(255)
+#  author       :string(255)
+#  publisher    :string(255)
+#  published_on :string(255)
+#  unit_cost    :integer
+#  category     :string(255)
+#  currency     :string(255)
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#
+
 require 'csv'
 require 'iconv'
 
@@ -8,10 +24,11 @@ class MediaItem < ActiveRecord::Base
   include Tire::Model::Callbacks  
 
   MARKUP = YAML.load_file("#{Rails.root}/config/markup.yml")
+  CSV_FILE = File.join( Rails.root.to_s, 'db', "import", "media_items.csv")
   
   composed_of :unit_cost,
               :class_name => 'Money',
-              :mapping => [%w(unit_cost cents), %w(currency currency_as_string)],
+              :mapping => [%w(unit_cost fractional), %w(currency currency_as_string)],
               :constructor => Proc.new { |unit_cost, currency| Money.new(unit_cost, currency || Money.default_currency) },
               :converter => Proc.new { |value| value.respond_to?(:to_money) ? (value.to_f.to_money rescue Money.empty) : Money.empty }
   
@@ -20,7 +37,6 @@ class MediaItem < ActiveRecord::Base
   validates :publisher, :presence => {:message => 'cannot be blank'}
   validates :category, :presence => {:message => 'cannot be blank'}
   validates :published_on, :presence => true
-  validates :unit_cost, :presence => {:message => 'cannot be blank'}, :numericality => true
   
   
   mapping do
@@ -54,7 +70,7 @@ class MediaItem < ActiveRecord::Base
   
   
   def price
-    unit_cost.to_d * 100.0 * ( 1 + MARKUP[self.category] )
+    unit_cost.to_d * ( 1 + MARKUP[self.category] )
   end
   
   def display_price
@@ -67,14 +83,15 @@ class MediaItem < ActiveRecord::Base
   
   def self.import_csv
     begin
-      CSV.foreach(File.join( Rails.root.to_s, 'db', "import", "media_items.csv"), {:headers => true, :header_converters => :symbol}) do |row|
-        media_item = find_by_title_and_author_and_publisher_and_published_on(row[:title], row[:author], row[:publisher], row[:published_on]) || new
+      CSV.foreach(MediaItem::CSV_FILE, {:headers => true, :header_converters => :symbol}) do |row|
+        media_item = MediaItem.find_by_title_and_author_and_publisher_and_published_on(row[:title], row[:author], row[:publisher], row[:published_on]) || MediaItem.new
         media_item.attributes = row.to_hash.merge({:currency => "USD"})
+        media_item.unit_cost = row[:unit_cost].to_f * 100.0
         media_item.save!
       end
     rescue Exception => e
       puts e.message
-      puts "Media item could not be created for row: #{row.to_hash}"
+      puts "Media item could not be created for row: #{row.to_hash}" if row
     end
   end
 end

@@ -35,6 +35,7 @@ end
 group :test do
   gem 'factory_girl_rails', "~> 4.1.0"
   gem 'faker', "~> 1.1.2"
+  gem 'mocha', '~> 0.13.1'
 end
 
 

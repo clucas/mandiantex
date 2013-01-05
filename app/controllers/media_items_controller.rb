@@ -6,7 +6,7 @@ class MediaItemsController < ApplicationController
   def index
     params[:search] = {} unless params[:search]
     init_search_sort
-    @media_items = MediaItem.search(params[:search].merge({:page => params[:page], :per_page => 10}))
+    @media_items = MediaItem.search(params[:search].merge({:page => params[:page] || 1, :per_page => 10}))
     
     respond_to do |format|
       format.html # index.html.erb

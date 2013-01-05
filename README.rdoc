@@ -5,6 +5,8 @@ The markup is in a configuration file in config/markup.yml
 The CoffeeScript is not pretty, it has no tests but it works according to the requirements. I could have used DataTables but I thought it was really overkill for that small exercise. If I had more time I would have tried to test the javascript with Konacha.
 
 The CSV does not contain any id so the key to guarantee uniqueness (and to allow update) is based on the following fields: title, author, publisher, published_on
+To import the csv:
+rake app:import_csv
 
 For search
 Install elasticsearch:
@@ -16,8 +18,15 @@ bin/elasticsearch -f -D es.config=config/elasticsearch.yml
 Run the index:
 RAILS_ENV=development rake environment tire:import CLASS='MediaItem' FORCE=true
 
+For search suggestions (caching the autocompletion terms)
+Install Redis:
+brew install redis
 
-install and run Redis (used for caching the autocompletion terms)
+Run Redis 
+redis-server
 
 run the rake task to load the search suggestions in Redis
-rake search_suggestions:index
+rake app:cache_suggestions
+
+Rake task to import csv and reindex everything: (Redis and ElasticSearch must be running)
+rake app:import_and_index

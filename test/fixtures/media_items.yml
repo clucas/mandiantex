@@ -1,19 +1,35 @@
+# == Schema Information
+#
+# Table name: media_items
+#
+#  id           :integer          not null, primary key
+#  title        :string(255)
+#  author       :string(255)
+#  publisher    :string(255)
+#  published_on :string(255)
+#  unit_cost    :integer
+#  category     :string(255)
+#  currency     :string(255)
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#
+
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
-one:
-  title: "Refactoring"
-  author: "Martin Fowler"
-  publisher: "Addison Wesley"
-  published_on: July 8, 1999
-  unit_cost: 50
-  category: "Book"
-  currency: "USD"
-
-two:
-  title: "Clean Code"
-  author: "Robert Martin"
-  publisher: "Prentice Hall"
-  published_on: August 01, 2008
-  unit_cost: 45
-  category: "Book"
-  currency: "USD"
+# one:
+#   title: "Refactoring"
+#   author: "Martin Fowler"
+#   publisher: "Addison Wesley"
+#   published_on: July 8, 1999
+#   unit_cost: 50
+#   category: "Book"
+#   currency: "USD"
+# 
+# two:
+#   title: "Clean Code"
+#   author: "Robert Martin"
+#   publisher: "Prentice Hall"
+#   published_on: August 01, 2008
+#   unit_cost: 45
+#   category: "Book"
+#   currency: "USD"
