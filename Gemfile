@@ -5,7 +5,8 @@ gem 'rails', '3.2.10'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
-gem 'mysql2', '0.3.11'
+gem 'pg', '0.14.1'
+# gem 'mysql2', '0.3.11'
 gem 'money', '5.1.0'
 gem 'sorted', '~> 0.4.3'
 gem 'will_paginate', '~> 3.0.3'

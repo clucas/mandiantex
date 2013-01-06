@@ -14,18 +14,18 @@
 ActiveRecord::Schema.define(:version => 20130104071343) do
 
   create_table "media_items", :force => true do |t|
-    t.string   "title"
-    t.string   "author"
-    t.string   "publisher"
+    t.string   "title",                       :null => false
+    t.string   "author",                      :null => false
+    t.string   "publisher",                   :null => false
     t.string   "published_on"
-    t.integer  "unit_cost"
-    t.string   "category"
+    t.integer  "unit_cost",    :default => 0, :null => false
+    t.string   "category",                    :null => false
     t.string   "currency"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
+    t.datetime "created_at",                  :null => false
+    t.datetime "updated_at",                  :null => false
   end
 
-  add_index "media_items", ["title", "author", "publisher"], :name => "media_items_unique_index", :unique => true
+  add_index "media_items", ["title", "author", "publisher", "published_on"], :name => "media_items_unique_index", :unique => true
 
   create_table "search_suggestions", :force => true do |t|
     t.string   "term"
