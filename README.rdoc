@@ -18,7 +18,7 @@ bin/elasticsearch -f -D es.config=config/elasticsearch.yml
 Run the index:
 RAILS_ENV=development rake environment tire:import CLASS='MediaItem' FORCE=true
 
-For search suggestions (caching the autocompletion terms)
+For search suggestions using Rack and Redis (caching the autocompletion terms)
 Install Redis:
 brew install redis
 
