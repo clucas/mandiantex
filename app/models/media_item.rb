@@ -22,6 +22,7 @@ class MediaItem < ActiveRecord::Base
   
   include Tire::Model::Search
   include Tire::Model::Callbacks  
+  index_name INDEX_NAME
 
   MARKUP = YAML.load_file("#{Rails.root}/config/markup.yml")
   CSV_FILE = File.join( Rails.root.to_s, 'db', "import", "media_items.csv")

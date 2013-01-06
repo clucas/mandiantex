@@ -35,3 +35,5 @@ Mandiantex::Application.configure do
   # Expands the lines which load the assets
   config.assets.debug = true
 end
+
+ENV["REDISTOGO_URL"] = 'redis://redistogo:90570eb776e122af77c1fdf405c00227@spadefish.redistogo.com:9974' 
