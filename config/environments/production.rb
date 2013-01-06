@@ -65,3 +65,5 @@ Mandiantex::Application.configure do
   # with SQLite, MySQL, and PostgreSQL)
   # config.active_record.auto_explain_threshold_in_seconds = 0.5
 end
+
+ENV["REDISTOGO_URL"] = 'redis://redistogo:90570eb776e122af77c1fdf405c00227@spadefish.redistogo.com:9974' 
